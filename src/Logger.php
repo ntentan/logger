@@ -148,10 +148,19 @@ class Logger
      */
     public static function init($path, $name = 'log', $minimumLevel = self::DEBUG)
     {
-        if(is_writable($path) || $path == 'php://output')
+        if($path === 'php://output')
         {
             self::$active = true;
         }
+        else if(is_writable($path))
+        {
+            self::$active = true;
+        }
+        else 
+        {
+            self::$active = false;
+        }
+        
         self::$backend = null;
         self::$stream = null;
         self::$name = $name;
