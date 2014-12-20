@@ -81,6 +81,12 @@ class Logger
      */
     private static $logFormat = "[%datetime%] [%channel%] %level_name% : %message%\n";
     
+    /**
+     * When set to false the logger is simply disabled.
+     * @var 
+     */
+    private static $active = false;
+    
     const EMERGENCY = \Monolog\Logger::EMERGENCY;
     const ALERT     = \Monolog\Logger::ALERT;
     const CRITICAL  = \Monolog\Logger::CRITICAL;
@@ -99,7 +105,7 @@ class Logger
     {
         if(!is_object(self::$backend))
         {
-            self::$backend = new \Monolog\Logger('log');
+            self::$backend = new \Monolog\Logger(self::$name);
             self::$backend->pushHandler(self::getStreamHandler());
             self::setLogFormat(self::$logFormat);
         }
@@ -142,6 +148,10 @@ class Logger
      */
     public static function init($path, $name = 'log', $minimumLevel = self::DEBUG)
     {
+        if(is_writable($path) || $path == 'php://output')
+        {
+            self::$active = true;
+        }
         self::$backend = null;
         self::$stream = null;
         self::$name = $name;
@@ -157,7 +167,10 @@ class Logger
      */
     public static function log($level, $message)
     {
-        self::getBackend()->addRecord($level, $message);
+        if(self::$active)
+        {
+            self::getBackend()->addRecord($level, $message);
+        }
     }
     
     public static function emergency($message)
