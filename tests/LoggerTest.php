@@ -34,7 +34,7 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         vfsStream::setup("logs");
-        touch(vfsStream::url("logs/file.log"));
+        file_put_contents(vfsStream::url("logs/file.log"), '');
         Logger::init(vfsStream::url("logs/file.log"), 'test');
         $this->log = "test EMERGENCY: Test logger!\n".
             "test ALERT: Test logger!\n".
